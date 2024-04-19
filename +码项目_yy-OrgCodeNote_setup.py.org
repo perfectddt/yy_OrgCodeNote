@@ -1,0 +1,26 @@
+:PROPERTIES:
+:ID:       378e048c-6ece-49fc-bc2f-1dd6b54d5085
+:END:
+#+title: program_1-论文code_ViT_tmp_setup.py
+#+FILETAGS: :º0_note:
+#+STARTUP: indent
+- tags :: 
+* program_1-论文 code_ViT_tmp_setup.py
+:PROPERTIES:
+:LOCATION: ../../../program/1-论文 code/ViT/tmp/setup.py
+:END:
+
+* [[file:d:/BaiduSyncdisk/program/1-论文code/ViT/tmp/setup.py::ackages=find_packages(),][lkjljlkjlj]]
+#+begin_src lisp
+  (start-process "orgfind-process" nil "python"
+               "C:/Users/Administrator/.spacemacs.d/layer/yy_OrgCodeNote/OrgFind.py"
+               "--file"
+               "C:/Users/Administrator/.spacemacs.d/layer/yy_OrgCodeNote/program_3-代码项目_yy-OrgCodeNote_setup.py.org"
+               "--database"
+               "yy_orgcodenote_my_database.db"
+               "-t"
+               "program_3_代码项目_yy_OrgCodeNote_setup.py.org_table")
+
+  (yy-add-star-to-line-number-display 5)
+
+#+end_src

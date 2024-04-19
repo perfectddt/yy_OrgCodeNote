@@ -1,0 +1,22 @@
+{
+    "sourceFile": "PrintDB.py",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1713409629782,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1713410849772,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,13 +1,13 @@\n # -*- coding: utf-8 -*-\r\n import sqlite3\r\n \r\n # 连接到数据库\r\n-conn = sqlite3.connect('yy-OrgCodeNote_my_database.db')\r\n+conn = sqlite3.connect('yy_OrgCodeNote_my_database.db')\r\n cursor = conn.cursor()\r\n \r\n # 查询数据库中的所有记录\r\n-cursor.execute('SELECT * FROM yy-OrgCodeNote_table')\r\n+cursor.execute('SELECT * FROM yy_OrgCodeNote_table')\r\n \r\n # 获取所有记录列表\r\n rows = cursor.fetchall()\r\n \r\n"
+                }
+            ],
+            "date": 1713409629782,
+            "name": "Commit-0",
+            "content": "# -*- coding: utf-8 -*-\r\nimport sqlite3\r\n\r\n# 连接到数据库\r\nconn = sqlite3.connect('yy-OrgCodeNote_my_database.db')\r\ncursor = conn.cursor()\r\n\r\n# 查询数据库中的所有记录\r\ncursor.execute('SELECT * FROM yy-OrgCodeNote_table')\r\n\r\n# 获取所有记录列表\r\nrows = cursor.fetchall()\r\n\r\n# 打印查询结果\r\nfor row in rows:\r\n    print(row)\r\n\r\n# 关闭数据库连接\r\nconn.close()"
+        }
+    ]
+}
