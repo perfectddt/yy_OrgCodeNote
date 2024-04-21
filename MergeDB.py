@@ -12,7 +12,7 @@ def merge_databases(main_db_path, other_db_path):
 
     # 合并表
     for table_name, in tables_other:
-        cursor_other.execute(f"SELECT * FROM {table_name};")
+        cursor_other.execute(f"SELECT * FROM '{table_name}';")
         data = cursor_other.fetchall()
         cursor_main = conn_main.cursor()
 
@@ -22,7 +22,7 @@ def merge_databases(main_db_path, other_db_path):
             # 如果表存在，直接插入数据
             for row in data:
                 try:
-                    cursor_main.execute(f"INSERT INTO {table_name} VALUES ({('?,' * len(row))[:-1]});", row)
+                    cursor_main.execute(f"INSERT INTO '{table_name}' VALUES ({('?,' * len(row))[:-1]});", row)
                 except sqlite3.IntegrityError:
                     # 处理唯一约束冲突
                     print(f"Unique constraint violation for table {table_name}. Skipping row.")
@@ -32,7 +32,7 @@ def merge_databases(main_db_path, other_db_path):
             cursor_other.execute(f"SELECT sql FROM sqlite_master WHERE type='table' AND name=?", (table_name,))
             create_table_sql = cursor_other.fetchone()[0]
             cursor_main.execute(create_table_sql)
-            cursor_main.executemany(f"INSERT INTO {table_name} VALUES ({('?,' * len(data[0]))[:-1]});", data)
+            cursor_main.executemany(f"INSERT INTO '{table_name}' VALUES ({('?,' * len(data[0]))[:-1]});", data)
             conn_main.commit()
 
     # 提交更改并关闭连接

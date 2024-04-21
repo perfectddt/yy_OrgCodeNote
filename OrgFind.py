@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import sqlite3
 import re
+import os
 import argparse
 
 # 创建命令行参数解析器
@@ -39,7 +40,8 @@ def process_file(file_path, table_name):
                 line_number += 1
                 match = re.search(pattern, line)
                 if match:
-                    location = match.group(1)
+                    # 将相对位置转换为绝对位置
+                    location = os.path.abspath(os.path.join(os.path.dirname(file_path), match.group(1)))
                     find = match.group(2)
                     cursor.execute(f'''
                     INSERT INTO `{table_name}` (location, find, org_num,org_location)

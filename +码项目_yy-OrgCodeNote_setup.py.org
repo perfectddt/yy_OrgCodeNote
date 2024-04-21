@@ -11,16 +11,59 @@
 :END:
 
 * [[file:d:/BaiduSyncdisk/program/1-论文code/ViT/tmp/setup.py::ackages=find_packages(),][lkjljlkjlj]]
-#+begin_src lisp
-  (start-process "orgfind-process" nil "python"
-               "C:/Users/Administrator/.spacemacs.d/layer/yy_OrgCodeNote/OrgFind.py"
-               "--file"
-               "C:/Users/Administrator/.spacemacs.d/layer/yy_OrgCodeNote/program_3-代码项目_yy-OrgCodeNote_setup.py.org"
-               "--database"
-               "yy_orgcodenote_my_database.db"
-               "-t"
-               "program_3_代码项目_yy_OrgCodeNote_setup.py.org_table")
 
-  (yy-add-star-to-line-number-display 5)
+[[file:d:/BaiduSyncdisk/program/1-论文code/ViT/tmp/setup.py::ackages=find_packages(),]]
+#+begin_src lisp
+    (start-process "orgfind-process" nil "python"
+                 "C:/Users/Administrator/.spacemacs.d/layer/yy_OrgCodeNote/OrgFind.py"
+                 "--file"
+                 "C:/Users/Administrator/.spacemacs.d/layer/yy_OrgCodeNote/program_3-代码项目_yy-OrgCodeNote_setup.py.org"
+                 "--database"
+                 "yy_orgcodenote_my_database.db"
+                 "-t"
+                 "program_3_代码项目_yy_OrgCodeNote_setup.py.org_table")
+
+    (yy-add-star-to-line-number-display 5)
+
+  (defun replace-absolute-paths-with-relative-to-current-file ()
+    "Replace absolute paths with relative paths based on the current file's directory."
+    (interactive)
+    (when (not buffer-read-only)
+      (let ((current-file-dir (file-name-directory (buffer-file-name)))
+            (case-fold-search t))
+        (when current-file-dir
+          (save-excursion
+            (goto-char (point-min))
+            (while (re-search-forward "\\([a-zA-Z]:/\\|/\\)[^]\n\r]*?" nil t)
+              (let ((absolute-path (match-string 0))
+                    (relative-path (file-relative-name absolute-path current-file-dir)))
+                (condition-case err
+                    (when (and absolute-path relative-path (not (string= absolute-path relative-path)))
+                      (replace-match relative-path nil t))
+                  (error
+                   (message "Error occurred during path replacement: %S" err))))))))))
+
+  (defun yynote-replace-paths-relative-to-current-file ()
+    "Replace yynote absolute paths with relative paths based on the current file."
+    (interactive)
+    (condition-case nil
+        (replace-absolute-paths-with-relative-to-current-file)
+      (error (message "An error occurred during path replacement."))))
+  
+  (defun convert-absolute-to-relative-path ()
+    "Convert absolute paths in the current Org file to relative paths."
+    (interactive)
+    (let* ((current-file (buffer-file-name))
+           (current-dir (file-name-directory current-file))
+           (search-regexp "\\\\(file:\\\(\\(?:/\\|~\\)[^)]*\\)\\\)")
+           (replace-func (lambda (absolute)
+                           (let ((relative (file-relative-name absolute current-dir)))
+                             (replace-regexp-in-string "\\\\(file:" "(file:" relative t)))))
+      (save-excursion
+        (goto-char (point-min))
+        (while (re-search-forward search-regexp nil t)
+          (let ((match (match-string 2)))
+            (when (and match (file-name-absolute-p match))
+              (replace-match (funcall replace-func match) t t nil 2)))))))
 
 #+end_src

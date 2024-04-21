@@ -25,16 +25,14 @@
           (split-string (buffer-string) "\n" t)
         (message "sqlite3 command failed with result: %s" result)
         nil)))
-  (message "yy-read-sqlite-db-via-command")
   )
 
 (defun modify-filename-for-table (filename)
   "将文件名转换为适用于数据库表名的格式。"
   (let ((modified-filename (replace-regexp-in-string "\\$" "" filename)))
-    (dolist (char '(" " "." "+" "-"))
+    (dolist (char '(" " "." "+" "-" "/" "\\\\" ":"))
       (setq modified-filename (replace-regexp-in-string (regexp-quote char) "_" modified-filename)))
     (concat modified-filename "_table"))
-  (message "modify-filename-for-table")
   )
 
 
@@ -49,7 +47,6 @@
       (let ((line-numbers (yy-read-sqlite-db-via-command db-file (format "SELECT code_num FROM %s;" table-name))))
         (dolist (line-number line-numbers)
           (yy-add-star-to-line-number-display (string-to-number line-number))))))
-  (message "yy-highlight-lines-in-db")
   )
 
 ;; org创建数据库
@@ -194,4 +191,30 @@
   (interactive)
   (yy-python-searchcodeplus)  ; 调用第一个函数
   (yy-highlight-lines-in-db)  ; 调用第二个函数
+  )
+
+(defun process-and-copy-filename ()
+  "处理带路径的文件名并复制到剪贴板。
+删除路径中从开始到'BaiduSyncdisk'的部分，然后使用`modify-filename-for-table`处理文件名。"
+  (interactive)
+  (let* ((full-path (buffer-file-name))
+         (path-after-baiduSyncdisk (when full-path
+                                     (save-match-data
+                                       (string-match "BaiduSyncdisk" full-path))
+                                     (substring full-path (match-beginning 0))))
+         (modified-filename (when path-after-baiduSyncdisk
+                              (modify-filename-for-table path-after-baiduSyncdisk))))
+    (when modified-filename
+      (kill-new modified-filename)
+      (message "处理后的文件名: %s" modified-filename))))
+
+(defun yy-process-and-copy-filename-code-to-org ()
+  "处理并复制当前文件的路径到剪贴板。"
+  (interactive)
+  (let* ((current-file-path (buffer-file-name))
+         (processed-path (replace-regexp-in-string "^.*BaiduSyncdisk/" "" current-file-path))
+         (table-name (modify-filename-for-table processed-path))
+         (code-name (replace-regexp-in-string "_table$" "_code" table-name)))
+    (kill-new code-name)
+    (message "处理后的文件名: %s" code-name))
   )

@@ -27,4 +27,6 @@
     "os" 'yy-python-searchcodeplus
     "oh" 'yy-highlight-lines-in-db
     "op" 'yy-python-searchcodeplus-and-highlight
+    "oc" 'yy-process-and-copy-filename-code-to-org 
     ))
+

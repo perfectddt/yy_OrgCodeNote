@@ -6,7 +6,6 @@
 #+TAGS: layer|web service
 
 # The maximum height of the logo should be 200 pixels.
-[[img/my-org-roam.png]]
 
 # TOC links should be GitHub style anchors.
 * Table of Contents                                        :TOC_4_gh:noexport:
@@ -23,7 +22,7 @@
 6. 在 org 文件里(yy-open-file-from-current-line)跳转 LOCATION 文件
 * Install
 To use this configuration layer, add it to your =~/.spacemacs=. You will need to
-add =my-org-roam= to the existing =dotspacemacs-configuration-layers= list in this
+add =yy_OrgCodeNote= to the existing =dotspacemacs-configuration-layers= list in this
 file.
 
 * Key bindings
@@ -35,9 +34,9 @@ file.
 | ,os         | yy-python-splittable                   |
 | ,ol         | yy-open-file-from-current-line         |
 | ,oo         | yy-python-orgfind-and-splittable       |
-| 'os         | yy-python-searchcodeplus               |
-| 'oh         | yy-highlight-lines-in-db               |
-| 'op         | yy-python-searchcodeplus-and-highlight |
+| ,os         | yy-python-searchcodeplus               |
+| ,oh         | yy-highlight-lines-in-db               |
+| ,op         | yy-python-searchcodeplus-and-highlight |
 
 # Use GitHub URLs if you wish to link a Spacemacs documentation file or its heading.
 # Examples:

@@ -15,9 +15,8 @@ def split_table_into_multiple_dbs(database_path, table_name):
     cursor = conn.cursor()
 
     # 使用方括号包裹表名以避免特殊字符问题
-    # wrapped_table_name = f'[{table_name}]'
-    wrapped_table_name = f'{table_name}'
-
+    wrapped_table_name = f"{table_name}"
+    # wrapped_table_name = f'{table_name}'
     # 检查原始表是否存在
     cursor.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name=?", (wrapped_table_name,))
     if cursor.fetchone() is None:
@@ -25,7 +24,8 @@ def split_table_into_multiple_dbs(database_path, table_name):
         return
 
     # 查询所有不同的location值
-    cursor.execute(f"SELECT DISTINCT location FROM {wrapped_table_name}")
+    print(f"SELECT DISTINCT location FROM \"{wrapped_table_name}\"")
+    cursor.execute(f"SELECT DISTINCT location FROM \"{wrapped_table_name}\"")
     locations = cursor.fetchall()
 
     # 对每个location进行处理
@@ -33,10 +33,17 @@ def split_table_into_multiple_dbs(database_path, table_name):
         location = location[0]  # 获取元组中的location值
         file_name = os.path.basename(location)# 处理file_name，替换不合规则的字符
         file_name = re.sub(r'[\$+\-\. ]', '_', file_name)  # 使用正则表达式替换
-        new_table_name = f"[{file_name}_table]"
+        new_table_name = f"{file_name}_table"
+        
+        # 检查新表是否已存在
+        cursor.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name=?", (new_table_name,))
+        if cursor.fetchone():
+            # 如果表已存在，删除它
+            cursor.execute(f"DROP TABLE IF EXISTS '{new_table_name}'")
+            conn.commit()
 
         # 在原始数据库中创建新表
-        cursor.execute(f"CREATE TABLE {new_table_name} AS SELECT * FROM {wrapped_table_name} WHERE location=?", (location,))
+        cursor.execute(f"CREATE TABLE '{new_table_name}' AS SELECT * FROM '{wrapped_table_name}' WHERE location=?", (location,))
         conn.commit()
 
         # 在location对应的文件夹路径下创建新数据库文件
