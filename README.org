@@ -14,29 +14,38 @@
 - [[#key-bindings][Key bindings]]
 
 * Description
-1. 在 org 文件里运行(yy-python-orgfind)生成了 yy_orgcodenote_my_database.db
-2. 在 org 文件里运行(yy-python-splittable),把 org 文件下的数据库的表拆分,并生成对应的空数据库文件，然后合并
-3. 在“代码文件”里执行(yy-python-searchcodeplus)，计算出 code_num，这里必须先保存代码文件。
-4. 在“代码文件”里标注有链接的行为星星(yy-highlight-lines-in-db)
-5. 在“代码文件”里跳转文件(yy-jump-to-line-in-db)
-6. 在 org 文件里(yy-open-file-from-current-line)跳转 LOCATION 文件
+1. 在“代码文件”里执行(yy-process-and-copy-filename-code-to-org)，计算出 code_num，这里必须先保存代码文件。
+2. spc n i 创建 org 文件，再 C-c l 与 C-c C-l 创建双链
+3. 在 org 文件里运行(yy-python-orgfind)生成了 yy_orgcodenote_my_database.db
+4. 在 org 文件里运行(yy-python-splittable),把 org 文件下的数据库的表拆分,并生成对应的空数据库文件，然后合并
+5. 在“代码文件”里执行(yy-python-searchcodeplus)，计算出 code_num，这里必须先保存代码文件。
+6. 在“代码文件”里标注有链接的行为星星(yy-highlight-lines-in-db)
+7. 在“代码文件”里跳转文件(yy-jump-to-line-in-db)
+8. 在 org 文件里(yy-open-file-from-current-line)跳转 LOCATION 文件
 * Install
 To use this configuration layer, add it to your =~/.spacemacs=. You will need to
 add =yy_OrgCodeNote= to the existing =dotspacemacs-configuration-layers= list in this
 file.
+#+begin_src shell
+sudo apt install sqlite3
+# 注意修改python的别名alias python='python3'
+sudo ln -s /usr/bin/python3 /usr/local/bin/python
+#+end_src
 
 * Key bindings
 
-| Key Binding | Description                            |
-|-------------+----------------------------------------|
-| ,og         | org-goto-toc                           |
-| ,of         | yy-python-orgfind                      |
-| ,os         | yy-python-splittable                   |
-| ,ol         | yy-open-file-from-current-line         |
-| ,oo         | yy-python-orgfind-and-splittable       |
-| ,os         | yy-python-searchcodeplus               |
-| ,oh         | yy-highlight-lines-in-db               |
-| ,op         | yy-python-searchcodeplus-and-highlight |
+| Key Binding | Description                              |
+|-------------+------------------------------------------|
+| ,og         | org-goto-toc                             |
+| ,of         | yy-python-orgfind                        |
+| ,os         | yy-python-splittable                     |
+| ,ol         | yy-open-file-from-current-line           |
+| ,oo         | yy-python-orgfind-and-splittable         |
+| ,os         | yy-python-searchcodeplus                 |
+| ,oh         | yy-highlight-lines-in-db                 |
+| ,op         | yy-python-searchcodeplus-and-highlight   |
+| ,oc         | yy-process-and-copy-filename-code-to-org |
+| ,oj         | yy-jump-to-line-in-db                    |
 
 # Use GitHub URLs if you wish to link a Spacemacs documentation file or its heading.
 # Examples:
