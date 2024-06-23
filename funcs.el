@@ -218,3 +218,31 @@
     (kill-new code-name)
     (message "处理后的文件名: %s" code-name))
   )
+(defun my-org-rename-16 ()
+  "Rename current Org mode file by removing the first 16 characters from its name."
+  (interactive)
+  (let* ((current-file (buffer-file-name))
+         (new-name (if current-file
+                       (concat (substring (file-name-nondirectory current-file) 16))
+                     nil)))
+    (if (and new-name (file-exists-p current-file))
+        (progn
+          (rename-file current-file new-name 1)
+          (kill-buffer (current-buffer))
+          (find-file new-name))
+      (message "Error: Unable to rename the file."))))
+(defun my-rename-file ()
+  "Prompt with the current file name for renaming."
+  (interactive)
+  (let ((current-file (buffer-file-name)))
+    (if current-file
+        (let ((new-name (read-string "New name: " (file-name-nondirectory current-file))))
+          (if (and new-name (not (string-equal new-name "")))
+              (progn
+                (let ((new-file-path (concat (file-name-directory current-file) new-name)))
+                  (rename-file current-file new-file-path)
+                  (kill-buffer (current-buffer))
+                  (find-file new-file-path)
+                  (message "File renamed to %s" new-file-path)))
+            (message "No new name provided, no action taken.")))
+      (message "This buffer is not visiting a file!"))))

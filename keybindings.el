@@ -6,7 +6,9 @@
     "os" 'yy-python-splittable
     "ol" 'yy-open-file-from-current-line
     "oo" 'yy-python-orgfind-and-splittable
+    "or" 'my-org-rename-16
     ))
+
 (dolist (mode '(python-mode
                 emacs-lisp-mode
                 sh-mode
