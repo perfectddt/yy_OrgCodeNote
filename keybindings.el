@@ -6,7 +6,7 @@
     "os" 'yy-python-splittable
     "ol" 'yy-open-file-from-current-line
     "oo" 'yy-python-orgfind-and-splittable
-    "or" 'my-org-rename-16
+    "on" 'yy-org-rename-16
     ))
 
 (dolist (mode '(python-mode
@@ -20,5 +20,7 @@
     "op" 'yy-python-searchcodeplus-and-highlight
     "oc" 'yy-process-and-copy-filename-code-to-org 
     "oj" 'yy-jump-to-line-in-db
+    "oa" 'yy-read-to-line-in-db 
+    "od" 'yy-hide-posframe
     ))
 

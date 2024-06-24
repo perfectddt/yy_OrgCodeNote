@@ -127,30 +127,6 @@
   (message "yy-python-searchcodeplus")
   )
 
-
-(defun yy-jump-to-line-in-db ()
-  "Jump to the line in the database specified by the current line number."
-  (interactive)
-  (let* ((current-line-number (line-number-at-pos))
-         (db-file "yy_orgcodenote_my_database.db")
-         (current-file (buffer-file-name))
-         (current-file-name (and current-file (file-name-nondirectory current-file)))
-         (table-name (and current-file-name (modify-filename-for-table current-file-name)))
-         (query (and table-name (format "SELECT org_location, org_num FROM %s WHERE code_num = %d;" table-name current-line-number)))
-         (result (and query (yy-read-sqlite-db-via-command db-file query))))
-
-    (if (not result)
-        (message "跳转失败")
-      (let ((org-file (car result))
-            (target-line-number (string-to-number (cadr result))))
-        (when (and org-file target-line-number)
-          (find-file org-file)
-          (goto-line target-line-number)
-          (message "跳转到行号: %d" target-line-number)))))
-  (message "yy-jump-to-line-in-db")
-  )
-
-
 (defun yy-jump-to-line-in-db ()
   "Jump to the line in the database specified by the current line number."
   (interactive)
@@ -175,11 +151,12 @@
         (when (string-match "\\(.*\\)|\\([0-9]+\\)" output)
           (let ((org-file (match-string 1 output))
                 (target-line-number (string-to-number (match-string 2 output))))
-            (message "org-file: %s" org-file)
-            (message "target-line-number: %d" target-line-number)
+            ;; (message "org-file: %s" org-file)
+            ;; (message "target-line-number: %d" target-line-number)
             (find-file org-file)
             (goto-line target-line-number)
             (message "跳转到行号: %d" target-line-number)))))))
+
 (defun yy-python-orgfind-and-splittable ()
   "首先执行yy-python-orgfind，然后执行yy-python-splittable。"
   (interactive)
@@ -218,7 +195,8 @@
     (kill-new code-name)
     (message "处理后的文件名: %s" code-name))
   )
-(defun my-org-rename-16 ()
+
+(defun yy-org-rename-16 ()
   "Rename current Org mode file by removing the first 16 characters from its name."
   (interactive)
   (let* ((current-file (buffer-file-name))
@@ -231,7 +209,8 @@
           (kill-buffer (current-buffer))
           (find-file new-name))
       (message "Error: Unable to rename the file."))))
-(defun my-rename-file ()
+
+(defun yy-rename-file ()
   "Prompt with the current file name for renaming."
   (interactive)
   (let ((current-file (buffer-file-name)))
@@ -246,3 +225,73 @@
                   (message "File renamed to %s" new-file-path)))
             (message "No new name provided, no action taken.")))
       (message "This buffer is not visiting a file!"))))
+
+(defvar yy-posframe-name "code-posframe")
+
+(defun yy-show-posframe-at-point (file-path line-number)
+  "Display a posframe with text near point, showing contents from FILE-PATH starting at LINE-NUMBER."
+  (interactive "fFile path: \nnLine number: ")
+  (let ((file-contents (yy-display-file-line file-path line-number)))
+    (if file-contents
+        (posframe-show yy-posframe-name
+                       :string file-contents
+                       :position (point)
+                       :background-color "#333333"
+                       :foreground-color "#ffffff")
+      (message "No content or file not readable"))))
+
+(defun yy-hide-posframe ()
+  "Hide the posframe."
+  (interactive)
+  (posframe-hide yy-posframe-name)
+)
+
+(defun yy-display-file-line (file-path line-number)
+  "从指定的 LINE-NUMBER+1 行开始，在 FILE-PATH 文件中寻找以'^+'开头的行，返回从 LINE-NUMBER 行到找到的行前一行的内容。"
+  (if (and file-path line-number)
+      (if (file-readable-p file-path)
+          (with-temp-buffer
+            (insert-file-contents file-path)
+            (goto-char (point-min))
+            (forward-line line-number)
+            (let ((end-line nil))
+              (while (and (not end-line) (not (eobp)))
+                (forward-line 1)
+                (when (looking-at "^\\*+ ")
+                  (setq end-line (1- (line-number-at-pos)))))
+              (unless end-line
+                (setq end-line (line-number-at-pos (point-max))))
+              (goto-char (point-min))
+              (forward-line (1- line-number))
+              (buffer-substring-no-properties (point)
+                                              (progn
+                                                (goto-char (point-min))
+                                                (forward-line end-line)
+                                                (point))))))))
+
+(defun yy-read-to-line-in-db ()
+  "Jump to the line in the database specified by the current line number."
+  (interactive)
+  (let* ((current-line-number (line-number-at-pos))
+         (db-file "yy_orgcodenote_my_database.db")
+         (current-file (buffer-file-name))
+         (current-file-name (and current-file (file-name-nondirectory current-file)))
+         (table-name (and current-file-name (modify-filename-for-table current-file-name)))
+         (query (and table-name (format "SELECT org_location, org_num FROM %s WHERE code_num = %d;" table-name current-line-number)))
+         (result (and query (yy-read-sqlite-db-via-command db-file query)))
+         (org-path "")
+         (org-number-line ""))
+    (when result
+      (setq result-string (car result))  ; Assuming the result is a single string
+      (if (string-match "\\(.*\\)|\\([0-9]+\\)" result-string)
+          (progn
+            (setq org-path (match-string 1 result-string))
+            (setq org-number-line (string-to-number (match-string 2 result-string)))  ; Convert string to number
+            ;; Uncomment for debugging:
+            (message "org-path: %s, org-number-line: %s" org-path org-number-line)
+            ;; (yy-display-file-line org-path org-number-line)
+            (yy-show-posframe-at-point org-path org-number-line)
+            )
+        (message "无法解析数据库输出: %s" result-string)))
+    (unless result
+        (message "跳转失败"))))

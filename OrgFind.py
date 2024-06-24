@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS `{args.table}` (
     `id` INTEGER PRIMARY KEY,
     `location` TEXT,
     `org_location` TEXT,
-    `find` TEXT,
+    `find` TEXT UNIQUE,
     `org_num` INTEGER,
     `code_num` INTEGER
 )
@@ -43,10 +43,14 @@ def process_file(file_path, table_name):
                     # 将相对位置转换为绝对位置
                     location = os.path.abspath(os.path.join(os.path.dirname(file_path), match.group(1)))
                     find = match.group(2)
+                    # cursor.execute(f'''
+                    # INSERT INTO `{table_name}` (location, find, org_num,org_location)
+                    # VALUES (?, ?, ?, ?)
+                    # ''', (location, find, line_number,file_path))
                     cursor.execute(f'''
-                    INSERT INTO `{table_name}` (location, find, org_num,org_location)
+                    INSERT OR REPLACE INTO `{table_name}` (location, find, org_num, org_location)
                     VALUES (?, ?, ?, ?)
-                    ''', (location, find, line_number,file_path))
+                    ''', (location, find, line_number, file_path))
         conn.commit()
     except FileNotFoundError:
         print("文件未找到")
