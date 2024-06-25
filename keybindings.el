@@ -12,6 +12,7 @@
 (dolist (mode '(python-mode
                 emacs-lisp-mode
                 sh-mode
+                yaml-mode
                 ;; 添加其他你想要支持的编程语言模式
                 ))
   (spacemacs/set-leader-keys-for-major-mode mode
