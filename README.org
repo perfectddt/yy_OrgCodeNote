@@ -45,14 +45,15 @@ sudo ln -s /usr/bin/python3 /usr/local/bin/python
 | ,of         | yy-python-orgfind                        |
 | ,os         | yy-python-splittable                     |
 | ,ol         | yy-open-file-from-current-line           |
+|             | yy-find-starred-lines                                         |
 | ,oo         | yy-python-orgfind-and-splittable         |
 | ,os         | yy-python-searchcodeplus                 |
 | ,oh         | yy-highlight-lines-in-db                 |
 | ,op         | yy-python-searchcodeplus-and-highlight   |
 | ,oc         | yy-process-and-copy-filename-code-to-org |
 | ,oj         | yy-jump-to-line-in-db                    |
-| ,oa         | yy-read-to-line-in-db                |
-| ,od         | yy-hide-posframe             |
+| ,oa         | yy-read-to-line-in-db                    |
+| ,od         | yy-hide-posframe                         |
 # Use GitHub URLs if you wish to link a Spacemacs documentation file or its heading.
 # Examples:
 # [[https://github.com/syl20bnr/spacemacs/blob/master/doc/VIMUSERS.org#sessions]]

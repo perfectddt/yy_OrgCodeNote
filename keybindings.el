@@ -23,5 +23,5 @@
     "oj" 'yy-jump-to-line-in-db
     "oa" 'yy-read-to-line-in-db 
     "od" 'yy-hide-posframe
+    "ol" 'yy-find-starred-lines
     ))
-

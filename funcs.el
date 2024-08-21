@@ -126,7 +126,6 @@
                    (format "%s" processed-table)))
   (message "yy-python-searchcodeplus")
   )
-
 (defun yy-jump-to-line-in-db ()
   "Jump to the line in the database specified by the current line number."
   (interactive)
@@ -153,7 +152,7 @@
                 (target-line-number (string-to-number (match-string 2 output))))
             ;; (message "org-file: %s" org-file)
             ;; (message "target-line-number: %d" target-line-number)
-            (find-file org-file)
+            (find-file-other-window org-file)
             (goto-line target-line-number)
             (message "跳转到行号: %d" target-line-number)))))))
 
@@ -295,3 +294,39 @@
         (message "无法解析数据库输出: %s" result-string)))
     (unless result
         (message "跳转失败"))))
+
+(defun yy-find-starred-lines ()
+  "查找当前 buffer 中由覆盖层设置的含有星号★的行，并显示在新 buffer 中。"
+  (interactive)
+  (let ((starred-overlays '()))
+    (save-excursion
+      (goto-char (point-min))
+      (mapc (lambda (overlay)
+              (when (and (overlay-get overlay 'before-string)
+                         (string-match "★" (overlay-get overlay 'before-string)))
+                (push (list (line-number-at-pos (overlay-start overlay))
+                            (current-buffer)
+                            (overlay-start overlay))
+                      starred-overlays)))
+            (overlays-in (point-min) (point-max))))
+
+    (if starred-overlays
+        (let ((new-buffer (generate-new-buffer "*Starred Lines*"))
+              (original-buffer (current-buffer))) ;; 记录当前 buffer 作为原始 buffer
+          (with-current-buffer new-buffer
+            (dolist (overlay-info starred-overlays)
+              (let ((line-number (car overlay-info))
+                    (match-begin (caddr overlay-info)))
+                (insert (format "Line %d\n" line-number))
+                (insert-text-button
+                 "Jump to line"
+                 'action `(lambda (_) ;; 使用 `(_) 来忽略参数
+                            (interactive)
+                            (switch-to-buffer-other-window ,original-buffer)
+                            (goto-char ,match-begin))
+                 'follow-link t)
+                (insert "\n"))))
+          (display-buffer new-buffer
+                          `(display-buffer-pop-up-window
+                            (inhibit-same-window . t)))) ;; 确保在新窗口中打开
+      (message "No starred lines found in current buffer."))))
