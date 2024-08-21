@@ -303,21 +303,23 @@
       (goto-char (point-min))
       (mapc (lambda (overlay)
               (when (and (overlay-get overlay 'before-string)
-                         (string-match "★" (overlay-get overlay 'before-string)))
-                (push (list (line-number-at-pos (overlay-start overlay))
-                            (current-buffer)
-                            (overlay-start overlay))
-                      starred-overlays)))
+                        (string-match "★" (overlay-get overlay 'before-string)))
+                (save-excursion
+                  (goto-char (overlay-start overlay)) ; 将光标移动到覆盖层起始位置
+                  (let ((line-content (buffer-substring (point) (line-end-position)))) ; 获取当前行的内容
+                    (push (list (line-number-at-pos (point))
+                                (current-buffer)
+                                (overlay-start overlay)
+                                line-content) starred-overlays)))))
             (overlays-in (point-min) (point-max))))
-
     (if starred-overlays
         (let ((new-buffer (generate-new-buffer "*Starred Lines*"))
               (original-buffer (current-buffer))) ;; 记录当前 buffer 作为原始 buffer
           (with-current-buffer new-buffer
             (dolist (overlay-info starred-overlays)
               (let ((line-number (car overlay-info))
-                    (match-begin (caddr overlay-info)))
-                (insert (format "Line %d\n" line-number))
+                    (match-begin (caddr overlay-info))
+                    (line-content (cadddr overlay-info))) ; 获取行内容
                 (insert-text-button
                  "Jump to line"
                  'action `(lambda (_) ;; 使用 `(_) 来忽略参数
@@ -325,6 +327,8 @@
                             (switch-to-buffer-other-window ,original-buffer)
                             (goto-char ,match-begin))
                  'follow-link t)
+                (insert (format " %d:\n" line-number))
+                (insert (format "%s\n" line-content)) ; 显示行号和行内容
                 (insert "\n"))))
           (display-buffer new-buffer
                           `(display-buffer-pop-up-window
